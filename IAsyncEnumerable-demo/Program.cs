@@ -13,9 +13,20 @@ namespace IAsyncEnumerable_demo
 {
     public class Program
     {
-        public static void Main(string[] args)
+        public static async Task Main(string[] args)
         {
-            CreateHostBuilder(args).Build().Run();
+            var host = CreateHostBuilder(args).Build();
+            var hostingTask = host.RunAsync();
+
+            var jokesEnumerable = (JokesEnumerable)host.Services.GetService(typeof(JokesEnumerable));
+
+            await foreach (var joke in jokesEnumerable.GetAsyncEnumerable(5000))
+            {
+                Console.WriteLine();
+                Console.WriteLine(joke);
+            }
+
+            await hostingTask;
         }
 
         public static IHostBuilder CreateHostBuilder(string[] args) =>

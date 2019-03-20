@@ -23,8 +23,9 @@ namespace IAsyncEnumerable_demo
                 int iterations = 0;
                 while (!cancellationToken.IsCancellationRequested)
                 {
-                    yield return await httpClient.GetAsync("https://icanhazdadjoke.com/", cancellationToken).Result
-                        .Content.ReadAsStringAsync();
+                    var response = await httpClient.GetAsync("https://icanhazdadjoke.com/", cancellationToken);
+                    var joke = await response.Content.ReadAsStringAsync();
+                    yield return joke;
                     iterations++;
                     if (iterations >= howMany)
                         yield break;
