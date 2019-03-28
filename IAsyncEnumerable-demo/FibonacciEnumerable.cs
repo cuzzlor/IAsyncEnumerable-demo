@@ -8,7 +8,7 @@ namespace IAsyncEnumerable_demo
 {
     public static class FibonacciEnumerable
     {
-        public static IEnumerable<long> GetEnumerable()
+        public static IEnumerable<long> Fibonacci()
         {
             yield return 0;
             yield return 1;
@@ -25,11 +25,11 @@ namespace IAsyncEnumerable_demo
             }
         }
 
-        public static async IAsyncEnumerable<long> GetAsyncEnumerable(int delay = 1000, int? howMany = null, CancellationToken cancellationToken = new CancellationToken())
+        public static async IAsyncEnumerable<long> Fibonacci(int delay = 1000, int? howMany = null, CancellationToken cancellationToken = new CancellationToken())
         {
             var iterations = 0;
 
-            foreach (var value in GetEnumerable())
+            foreach (var value in Fibonacci())
             {
                 yield return value;
                 iterations++;

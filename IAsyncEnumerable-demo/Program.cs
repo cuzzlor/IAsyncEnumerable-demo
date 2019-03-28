@@ -20,7 +20,7 @@ namespace IAsyncEnumerable_demo
 
             var jokesEnumerable = (JokesEnumerable)host.Services.GetService(typeof(JokesEnumerable));
 
-            await foreach (var joke in jokesEnumerable.GetAsyncEnumerable(5000))
+            await foreach (var joke in jokesEnumerable.Jokes(3000))
             {
                 Console.WriteLine();
                 Console.WriteLine(joke);

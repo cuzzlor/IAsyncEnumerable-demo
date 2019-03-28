@@ -41,7 +41,7 @@ namespace IAsyncEnumerable_demo
             int delay,
             CancellationToken cancellationToken)
         {
-            await foreach (var value in _jokesEnumerable.GetAsyncEnumerable(delay, count, cancellationToken))
+            await foreach (var value in _jokesEnumerable.Jokes(delay, count, cancellationToken))
             {
                 yield return value;
             }
@@ -52,7 +52,7 @@ namespace IAsyncEnumerable_demo
             int delay,
             CancellationToken cancellationToken)
         {
-            await foreach (var value in FibonacciEnumerable.GetAsyncEnumerable(delay, count, cancellationToken))
+            await foreach (var value in FibonacciEnumerable.Fibonacci(delay, count, cancellationToken))
             {
                 yield return value;
             }

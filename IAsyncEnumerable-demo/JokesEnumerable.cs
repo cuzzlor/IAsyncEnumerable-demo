@@ -15,8 +15,17 @@ namespace IAsyncEnumerable_demo
         {
             _httpClientFactory = httpClientFactory;
         }
-        
-        public async IAsyncEnumerable<string> GetAsyncEnumerable(int delay = 1000, int? howMany = null, CancellationToken cancellationToken = new CancellationToken())
+
+        public async IAsyncEnumerable<string> Jokes()
+        {
+            using (var httpClient = _httpClientFactory.CreateClient("jokes"))
+            {
+                var response = await httpClient.GetAsync("https://icanhazdadjoke.com/");
+                yield return await response.Content.ReadAsStringAsync();
+            }
+        }
+
+        public async IAsyncEnumerable<string> Jokes(int delay = 1000, int? howMany = null, CancellationToken cancellationToken = new CancellationToken())
         {
             using (var httpClient = _httpClientFactory.CreateClient("jokes"))
             {
