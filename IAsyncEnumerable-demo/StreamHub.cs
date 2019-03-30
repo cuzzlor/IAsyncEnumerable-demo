@@ -1,61 +1,54 @@
-﻿
+﻿using Microsoft.AspNetCore.SignalR;
 using System;
-using System.Collections.Generic;
 using System.Threading;
+using System.Threading.Channels;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.SignalR;
 
 namespace IAsyncEnumerable_demo
 {
     public class StreamHub : Hub
     {
-        private readonly JokesEnumerable _jokesEnumerable;
-
-        public StreamHub(JokesEnumerable jokesEnumerable)
-        {
-            _jokesEnumerable = jokesEnumerable;
-        }
-
-        // as per the official doc: https://docs.microsoft.com/en-us/aspnet/core/signalr/streaming?view=aspnetcore-3.0
-        public async IAsyncEnumerable<int> Counter(
+        public ChannelReader<int> Counter(
             int count,
             int delay,
             CancellationToken cancellationToken)
         {
-            for (var i = 0; i < count; i++)
-            {
-                // Check the cancellation token regularly so that the server will stop
-                // producing items if the client disconnects.
-                cancellationToken.ThrowIfCancellationRequested();
+            var channel = Channel.CreateUnbounded<int>();
 
-                yield return i;
+            // We don't want to await WriteItemsAsync, otherwise we'd end up waiting
+            // for all the items to be written before returning the channel back to
+            // the client.
+            _ = WriteItemsAsync(channel.Writer, count, delay, cancellationToken);
 
-                // Use the cancellationToken in other APIs that accept cancellation
-                // tokens so the cancellation can flow down to them.
-                await Task.Delay(delay, cancellationToken);
-            }
+            return channel.Reader;
         }
 
-        public async IAsyncEnumerable<string> Jokes(
+        private async Task WriteItemsAsync(
+            ChannelWriter<int> writer,
             int count,
             int delay,
             CancellationToken cancellationToken)
         {
-            await foreach (var value in _jokesEnumerable.Jokes(delay, count, cancellationToken))
+            try
             {
-                yield return value;
-            }
-        }
+                for (var i = 0; i < count; i++)
+                {
+                    // Check the cancellation token regularly so that the server will stop
+                    // producing items if the client disconnects.
+                    cancellationToken.ThrowIfCancellationRequested();
+                    await writer.WriteAsync(i);
 
-        public async IAsyncEnumerable<long> Fibonacci(
-            int count,
-            int delay,
-            CancellationToken cancellationToken)
-        {
-            await foreach (var value in FibonacciEnumerable.Fibonacci(delay, count, cancellationToken))
-            {
-                yield return value;
+                    // Use the cancellationToken in other APIs that accept cancellation
+                    // tokens so the cancellation can flow down to them.
+                    await Task.Delay(delay, cancellationToken);
+                }
             }
+            catch (Exception ex)
+            {
+                writer.TryComplete(ex);
+            }
+
+            writer.TryComplete();
         }
     }
 }

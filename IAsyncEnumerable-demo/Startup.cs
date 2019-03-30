@@ -33,17 +33,9 @@ namespace IAsyncEnumerable_demo
                 app.UseDeveloperExceptionPage();
             }
 
-            app.UseRouting(routes =>
-            {
-                routes.MapGet("/", async context =>
-                {
-                    await context.Response.WriteAsync("Hello World!");
-                });
-            });
-
             app.UseSignalR(route =>
             {
-                route.MapHub<StreamHub>("/stream");
+                route.MapHub<AsyncEnumerableHub>("/stream");
             });
         }
 

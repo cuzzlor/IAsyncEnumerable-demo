@@ -1,9 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Collections.Generic;
 using System.Net.Http;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace IAsyncEnumerable_demo
 {
@@ -20,25 +16,10 @@ namespace IAsyncEnumerable_demo
         {
             using (var httpClient = _httpClientFactory.CreateClient("jokes"))
             {
-                var response = await httpClient.GetAsync("https://icanhazdadjoke.com/");
-                yield return await response.Content.ReadAsStringAsync();
-            }
-        }
-
-        public async IAsyncEnumerable<string> Jokes(int delay = 1000, int? howMany = null, CancellationToken cancellationToken = new CancellationToken())
-        {
-            using (var httpClient = _httpClientFactory.CreateClient("jokes"))
-            {
-                int iterations = 0;
-                while (!cancellationToken.IsCancellationRequested)
+                while (true)
                 {
-                    var response = await httpClient.GetAsync("https://icanhazdadjoke.com/", cancellationToken);
-                    var joke = await response.Content.ReadAsStringAsync();
-                    yield return joke;
-                    iterations++;
-                    if (iterations >= howMany)
-                        yield break;
-                    await Task.Delay(delay, cancellationToken);
+                    var response = await httpClient.GetAsync("https://icanhazdadjoke.com/");
+                    yield return await response.Content.ReadAsStringAsync();
                 }
             }
         }

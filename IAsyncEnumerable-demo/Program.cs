@@ -1,13 +1,7 @@
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
+using System;
+using System.Threading.Tasks;
 
 namespace IAsyncEnumerable_demo
 {
@@ -20,10 +14,10 @@ namespace IAsyncEnumerable_demo
 
             var jokesEnumerable = (JokesEnumerable)host.Services.GetService(typeof(JokesEnumerable));
 
-            await foreach (var joke in jokesEnumerable.Jokes(3000))
+            await foreach (var joke in jokesEnumerable.Jokes())
             {
-                Console.WriteLine();
-                Console.WriteLine(joke);
+                Console.WriteLine(joke + Environment.NewLine + Environment.NewLine);
+                await Task.Delay(3000);
             }
 
             await hostingTask;

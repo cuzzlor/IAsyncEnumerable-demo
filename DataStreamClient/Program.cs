@@ -13,7 +13,7 @@ namespace DataStreamClient
             var connection = new HubConnectionBuilder().WithUrl("https://localhost:5001/stream").Build();
             await connection.StartAsync(tokenSource.Token);
 
-            var channel = await connection.StreamAsChannelAsync<int>("Counter", 100, 1000, tokenSource.Token, tokenSource.Token);
+            var channel = await connection.StreamAsChannelAsync<int>("Jokes", tokenSource.Token, tokenSource.Token);
 
             while (await channel.WaitToReadAsync(tokenSource.Token))
             {
