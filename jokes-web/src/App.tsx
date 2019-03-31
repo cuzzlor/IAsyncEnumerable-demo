@@ -44,7 +44,7 @@ class App extends Component<AppProps, AppState> {
   render() {
     return (
       <ul>
-        {this.state.jokes.map(joke => <li key={joke}>{joke}</li>)}
+        {this.state.jokes.map((joke, index) => <li key={index}>{joke}</li>)}
       </ul>
     );
   }
