@@ -23,6 +23,7 @@ class App extends Component<{}, AppState> {
       this.state.jokes.push(joke);
       this.setState(this.state);
     })
+    connection.start();
   }
 
   render() {
