@@ -20,6 +20,7 @@ namespace IAsyncEnumerable_demo
         // For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddCors();
             services.AddHttpClient("jokes", c => { c.DefaultRequestHeaders.Accept.Add(MediaTypeWithQualityHeaderValue.Parse("text/plain")); });
             services.AddSignalR();
             services.AddSingleton<JokesEnumerable>();
@@ -32,6 +33,14 @@ namespace IAsyncEnumerable_demo
             {
                 app.UseDeveloperExceptionPage();
             }
+
+            app.UseCors(builder =>
+            {
+                builder.WithOrigins("http://localhost:3000")
+                    .AllowAnyHeader()
+                    .AllowAnyMethod()
+                    .AllowCredentials();
+            });
 
             app.UseSignalR(route =>
             {

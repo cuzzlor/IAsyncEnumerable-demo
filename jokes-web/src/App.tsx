@@ -17,19 +17,27 @@ class App extends Component<{}, AppState> {
     this.getJokes();
   }
 
-  private getJokes() {
-    const connection = new HubConnectionBuilder().withUrl('http://localhost:5000').build();
-    connection.on("jokes", (joke: string) => {
-      this.state.jokes.push(joke);
-      this.setState(this.state);
-    })
-    connection.start();
+  private async getJokes() {
+    const connection = new HubConnectionBuilder().withUrl('http://localhost:5000/stream').build();
+    await connection.start();
+    connection.stream("Jokes", 3000)
+      .subscribe({
+        next: (joke) => {
+          this.state.jokes.push(joke);
+          this.setState(this.state);
+        },
+        complete: () => {
+        },
+        error: (err) => {
+          console.error(err.message, err.stack);
+        },
+      });
   }
 
   render() {
     return (
       <ul>
-        {this.state.jokes.map(joke => <li>{joke}</li>)}
+        {this.state.jokes.map(joke => <li key={joke}>{joke}</li>)}
       </ul>
     );
   }
